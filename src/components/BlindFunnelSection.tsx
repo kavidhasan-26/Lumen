@@ -80,12 +80,12 @@ export function BlindFunnelSection() {
       style={{ height: '200vh' }}
     >
       <div className="sticky top-0 h-[100svh] md:min-h-[100svh]">
-        {/* Mobile — text top, dots fill remaining viewport */}
+        {/* Mobile — text top, fixed-height dots below */}
         <div className="flex h-full flex-col md:hidden">
-          <div className="relative z-10 mx-auto w-full max-w-5xl shrink-0 px-6 pt-32 pb-5">
+          <div className="relative z-10 mx-auto w-full max-w-5xl min-h-0 flex-1 px-6 pt-32 pb-5">
             <FunnelCopy content={content} />
           </div>
-          <div className="relative min-h-0 flex-1">
+          <div className="blind-funnel__dots relative h-[54svh] shrink-0">
             <div className="blind-funnel__top-fade pointer-events-none absolute inset-x-0 top-0 z-10" aria-hidden />
             <QuestionDotField glowPhase={glowPhase} showPills={false} />
           </div>
