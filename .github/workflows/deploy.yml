@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
   workflow_dispatch:
 
 permissions:
@@ -33,12 +35,24 @@ jobs:
         env:
           GITHUB_PAGES: 'true'
 
-      - name: Add SPA fallback
-        run: cp dist/index.html dist/404.html
+      - name: Prepare docs folder
+        run: |
+          rm -rf docs
+          cp -r dist docs
+          cp dist/index.html docs/404.html
+          touch docs/.nojekyll
+
+      - name: Commit docs folder
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: github-actions[bot]
+          author_email: 41898282+github-actions[bot]@users.noreply.github.com
+          message: 'Deploy site to docs'
+          add: 'docs'
 
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          commit_message: 'Deploy site'
+          commit_message: 'Deploy site to gh-pages'
