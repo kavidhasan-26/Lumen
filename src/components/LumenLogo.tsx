@@ -4,12 +4,14 @@ interface LumenLogoProps {
 
 export function LumenLogo({ className }: LumenLogoProps) {
   const imgClass = className ?? 'lumen-logo-img'
+  const logoDark = `${import.meta.env.BASE_URL}lumen-logo.png`
+  const logoLight = `${import.meta.env.BASE_URL}lumen-logo-light.png`
 
   return (
     <>
       <img
-        src="/lumen-logo.png"
-        srcSet="/lumen-logo.png 2x"
+        src={logoDark}
+        srcSet={`${logoDark} 2x`}
         alt="Lumen AI"
         width={225}
         height={41}
@@ -17,8 +19,8 @@ export function LumenLogo({ className }: LumenLogoProps) {
         decoding="async"
       />
       <img
-        src="/lumen-logo-light.png"
-        srcSet="/lumen-logo-light.png 2x"
+        src={logoLight}
+        srcSet={`${logoLight} 2x`}
         alt="Lumen AI"
         width={225}
         height={41}
