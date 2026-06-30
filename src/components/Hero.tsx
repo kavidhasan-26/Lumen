@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { HeroDotField } from './HeroDotField'
+import { LOGIN_URL } from '../lib/loginUrl'
 
 export function Hero() {
   return (
@@ -45,8 +46,8 @@ export function Hero() {
             <a href="#contact" className="btn-hero-primary">
               Book a demo
             </a>
-            <a href="#how-it-works" className="btn-hero-secondary">
-              How it works
+            <a href={LOGIN_URL} className="btn-hero-secondary">
+              Login
             </a>
           </motion.div>
         </div>

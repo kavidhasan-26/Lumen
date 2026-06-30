@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useScroll } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { QuestionDotField } from './QuestionDotField'
+import { ScrollSectionDots } from './ScrollSectionDots'
 
 const phases = [
   {
@@ -8,7 +9,7 @@ const phases = [
     eyebrow: '01 — The blind funnel',
     line1: "Your funnel doesn't leak at the bottom.",
     line2: 'It leaks in the dark.',
-    body: "No signal on who's ready to book. Your team works the list in the dark — and the best leads go cold.",
+    body: "You can't tell who's ready to book. Your team calls blind — and good leads go cold.",
     glow: 0,
   },
   {
@@ -67,7 +68,9 @@ export function BlindFunnelSection() {
     return scrollYProgress.on('change', (value) => {
       const nextPhase = value < 0.48 ? 0 : 1
       setPhase(nextPhase)
-      setGlowPhase(Math.max(0, Math.min(1, (value - 0.35) / 0.4)))
+      setGlowPhase(
+        value < 0.48 ? 0 : Math.max(0, Math.min(1, (value - 0.48) / 0.52)),
+      )
     })
   }, [scrollYProgress])
 
@@ -83,11 +86,16 @@ export function BlindFunnelSection() {
         {/* Mobile — text top, fixed-height dots below */}
         <div className="flex h-full flex-col md:hidden">
           <div className="relative z-10 mx-auto w-full max-w-5xl min-h-0 flex-1 px-6 pt-32 pb-5">
-            <FunnelCopy content={content} />
+            <div className="flex items-center">
+              <ScrollSectionDots progress={scrollYProgress} className="mr-4 shrink-0" />
+              <div className="min-w-0 flex-1">
+                <FunnelCopy content={content} />
+              </div>
+            </div>
           </div>
-          <div className="blind-funnel__dots relative h-[54svh] shrink-0">
+          <div className="blind-funnel__dots relative h-[54svh] shrink-0 overflow-visible">
             <div className="blind-funnel__top-fade pointer-events-none absolute inset-x-0 top-0 z-10" aria-hidden />
-            <QuestionDotField glowPhase={glowPhase} showPills={false} />
+            <QuestionDotField glowPhase={glowPhase} variant="mobile" />
           </div>
         </div>
 
@@ -95,12 +103,17 @@ export function BlindFunnelSection() {
         <div className="relative hidden min-h-[100svh] md:block">
           <div className="relative mx-auto min-h-[100svh] max-w-5xl px-6 md:px-10">
             <div className="relative z-10 flex min-h-[100svh] max-w-xl flex-col justify-center py-20 md:max-w-md md:py-24 lg:max-w-xl">
-              <FunnelCopy content={content} />
+              <div className="flex items-center">
+                <ScrollSectionDots progress={scrollYProgress} className="mr-6 shrink-0 lg:mr-8" />
+                <div className="min-w-0 flex-1">
+                  <FunnelCopy content={content} />
+                </div>
+              </div>
             </div>
           </div>
 
           <div className="pointer-events-none absolute inset-y-0 right-0 left-0 md:left-[38%] lg:left-[42%]">
-            <QuestionDotField glowPhase={glowPhase} showPills />
+            <QuestionDotField glowPhase={glowPhase} variant="desktop" />
           </div>
         </div>
       </div>

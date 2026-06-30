@@ -5,7 +5,7 @@ const stats = [
   { value: '100%', label: 'Of leads in your pipeline scored' },
   { value: '6×', label: 'More bookings from top-ranked calls' },
   { value: '<60s', label: 'To rank a new inquiry' },
-  { value: '15–20%', label: 'Revenue lift at pilot clinics' },
+  { value: '30–40%', label: 'Revenue lift at pilot clinics' },
 ]
 
 export function Stats() {

@@ -10,14 +10,14 @@ const phases = [
     dimmed: false,
   },
   {
-    title: 'Asha Chat',
+    title: 'Lumen Chat',
     status: 'Next',
     tone: 'purple' as const,
     body: "Autopilot on WhatsApp — reaches every enquiry in seconds, qualifies in the patient's language, and books the consult.",
     dimmed: false,
   },
   {
-    title: 'Asha Voice',
+    title: 'Lumen Voice',
     status: 'On the horizon',
     tone: 'muted' as const,
     body: 'Autopilot on the phone — a warm, natural voice that handles questions, calms anxiety, and carries the affordability conversation to a decision.',

@@ -1,5 +1,6 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
+import { BookDemoForm } from './BookDemoForm'
 import { FunnelLineBackground } from './FunnelLineBackground'
 
 export function Footer() {
@@ -25,9 +26,7 @@ export function Footer() {
           <p className="cta-funnel__subtext mt-4 text-sm leading-relaxed text-white md:text-base">
             See how Lumen ranks the leads already sitting in your pipeline.
           </p>
-          <a href="#contact" className="btn-white mt-8 inline-flex">
-            Book a demo
-          </a>
+          <BookDemoForm />
         </motion.div>
 
         <p className="text-muted relative z-10 mt-16 text-center text-xs md:mt-20">

@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useTheme } from '../context/ThemeContext'
 import { LumenLogo } from './LumenLogo'
+import { LOGIN_URL } from '../lib/loginUrl'
 import { ThemeToggle } from './ThemeToggle'
 
 const links = [
   { label: 'How it works', href: '#how-it-works' },
+  { label: 'Console', href: '#console' },
   { label: 'Roadmap', href: '#roadmap' },
 ]
 
@@ -56,7 +58,13 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="flex items-center">
+        <div className="flex items-center gap-3 md:gap-4">
+          <a
+            href={LOGIN_URL}
+            className="text-muted hidden text-sm font-medium transition-colors hover:text-ink md:inline"
+          >
+            Login
+          </a>
           <a
             href="#contact"
             className="bg-ink text-void rounded-full px-4 py-2 text-xs font-medium transition-all hover:opacity-90 md:text-sm"

@@ -39,6 +39,18 @@ const tokens: Token[] = [
 
 const WORD_COUNT = tokens.length
 const SCROLL_VH_PER_WORD = 9
+const REVEAL_SCROLL_FRACTION = 0.82
+const HOLD_SCROLL_VH = 40
+
+function wordRevealRange(index: number, total: number) {
+  const start = (index / total) * REVEAL_SCROLL_FRACTION
+  const end = Math.min(
+    REVEAL_SCROLL_FRACTION,
+    ((index + 1.15) / total) * REVEAL_SCROLL_FRACTION,
+  )
+
+  return { start, end }
+}
 
 function ScrollWord({
   index,
@@ -53,9 +65,14 @@ function ScrollWord({
   children: React.ReactNode
   className?: string
 }) {
-  const start = index / total
-  const end = Math.min(1, (index + 1.15) / total)
-  const opacity = useTransform(progress, [start, end], [0.14, 1])
+  const { start, end } = wordRevealRange(index, total)
+  const opacity = useTransform(progress, (value) => {
+    if (value <= start) return 0.14
+    if (value >= end) return 1
+
+    const t = (value - start) / (end - start)
+    return 0.14 + t * 0.86
+  })
 
   return (
     <motion.span style={{ opacity }} className={`inline ${className}`}>
@@ -77,31 +94,36 @@ export function VisionStatement() {
     <section
       ref={sectionRef}
       className="vision-statement relative border-t border-border"
-      style={{ height: `${WORD_COUNT * SCROLL_VH_PER_WORD}vh` }}
+      style={{ height: `${WORD_COUNT * SCROLL_VH_PER_WORD + HOLD_SCROLL_VH}vh` }}
     >
       <div className="sticky top-0 flex min-h-[100svh] items-center justify-center px-6 py-24 md:px-10">
         <p className="font-display text-ink mx-auto max-w-4xl text-center text-[clamp(1.65rem,4.5vw,2.75rem)] leading-[1.25] tracking-[-0.02em]">
-          {tokens.map((token, i) => {
-            if (typeof token === 'string') {
+            {tokens.map((token, i) => {
+              if (typeof token === 'string') {
+                return (
+                  <ScrollWord
+                    key={`${token}-${i}`}
+                    index={i}
+                    total={WORD_COUNT}
+                    progress={scrollYProgress}
+                  >
+                    {token}
+                  </ScrollWord>
+                )
+              }
+
               return (
-                <ScrollWord key={`${token}-${i}`} index={i} total={WORD_COUNT} progress={scrollYProgress}>
-                  {token}
+                <ScrollWord
+                  key={`${token.text}-${i}`}
+                  index={i}
+                  total={WORD_COUNT}
+                  progress={scrollYProgress}
+                  className={token.gradient ? 'vision-gradient' : ''}
+                >
+                  {token.text}
                 </ScrollWord>
               )
-            }
-
-            return (
-              <ScrollWord
-                key={`${token.text}-${i}`}
-                index={i}
-                total={WORD_COUNT}
-                progress={scrollYProgress}
-                className={token.gradient ? 'vision-gradient' : ''}
-              >
-                {token.text}
-              </ScrollWord>
-            )
-          })}
+            })}
         </p>
       </div>
     </section>

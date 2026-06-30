@@ -139,17 +139,17 @@ function drawBackground(ctx: CanvasRenderingContext2D, w: number, h: number, the
   ctx.fillRect(0, 0, w, h)
 }
 
-function drawFade(ctx: CanvasRenderingContext2D, w: number, h: number, theme: ThemeMode, skip = false) {
-  if (skip) return
+function drawFade(ctx: CanvasRenderingContext2D, w: number, h: number, theme: ThemeMode, edgeFade: boolean) {
+  if (edgeFade) {
+    const base = theme === 'light' ? '243, 239, 232' : '8, 8, 10'
 
-  const base = theme === 'light' ? '243, 239, 232' : '8, 8, 10'
-
-  const left = ctx.createLinearGradient(0, 0, w * 0.35, 0)
-  left.addColorStop(0, `rgba(${base}, 0.85)`)
-  left.addColorStop(0.5, `rgba(${base}, 0.2)`)
-  left.addColorStop(1, `rgba(${base}, 0)`)
-  ctx.fillStyle = left
-  ctx.fillRect(0, 0, w, h)
+    const left = ctx.createLinearGradient(0, 0, w * 0.35, 0)
+    left.addColorStop(0, `rgba(${base}, 0.85)`)
+    left.addColorStop(0.5, `rgba(${base}, 0.2)`)
+    left.addColorStop(1, `rgba(${base}, 0)`)
+    ctx.fillStyle = left
+    ctx.fillRect(0, 0, w, h)
+  }
 
   const bottom = ctx.createRadialGradient(w * 0.5, h * 1.1, 0, w * 0.5, h * 0.7, w * 0.55)
   bottom.addColorStop(0, theme === 'light' ? 'rgba(212, 164, 58, 0.12)' : 'rgba(232, 184, 74, 0.1)')
@@ -209,7 +209,7 @@ function drawLeadDot(
   ctx.globalAlpha = 1
 }
 
-const QUESTIONS = [
+const DESKTOP_QUESTIONS = [
   { id: 'who', text: 'Who is this?', x: '58%', y: '18%', delay: 0 },
   { id: 'afford', text: 'Can they afford it?', x: '42%', y: '36%', delay: 0.4 },
   { id: 'intent', text: 'Will they book?', x: '68%', y: '44%', delay: 0.8 },
@@ -217,24 +217,41 @@ const QUESTIONS = [
   { id: 'fit', text: 'Right procedure?', x: '72%', y: '70%', delay: 1.6 },
 ]
 
+const MOBILE_QUESTIONS = [
+  { id: 'who', text: 'Who is this?', x: '74%', y: '12%', delay: 0 },
+  { id: 'afford', text: 'Can they afford it?', x: '34%', y: '26%', delay: 0.4 },
+  { id: 'intent', text: 'Will they book?', x: '70%', y: '42%', delay: 0.8 },
+  { id: 'when', text: 'When to call?', x: '30%', y: '58%', delay: 1.2 },
+  { id: 'fit', text: 'Right procedure?', x: '72%', y: '74%', delay: 1.6 },
+]
+
 interface QuestionDotFieldProps {
   /** 0 = problem (dim), 1 = ranked (glowing) */
   glowPhase: number
   showPills?: boolean
+  variant?: 'desktop' | 'mobile'
 }
 
-export function QuestionDotField({ glowPhase, showPills = true }: QuestionDotFieldProps) {
+export function QuestionDotField({
+  glowPhase,
+  showPills = true,
+  variant = 'desktop',
+}: QuestionDotFieldProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const frameRef = useRef(0)
   const dotsRef = useRef<Dot[]>([])
   const glowRef = useRef(glowPhase)
   const showPillsRef = useRef(showPills)
+  const variantRef = useRef(variant)
   const timeRef = useRef(0)
   const { theme } = useTheme()
   const themeRef = useRef(theme)
   themeRef.current = theme
   glowRef.current = glowPhase
   showPillsRef.current = showPills
+  variantRef.current = variant
+
+  const questions = variant === 'mobile' ? MOBILE_QUESTIONS : DESKTOP_QUESTIONS
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -268,13 +285,13 @@ export function QuestionDotField({ glowPhase, showPills = true }: QuestionDotFie
       const h = rect.height
       const time = timeRef.current
       const phase = glowRef.current
-      const glowCount = Math.round(1 + phase * 4)
+      const glowCount = phase <= 0 ? 0 : Math.min(5, Math.floor(phase * 5))
 
       assignLeads(dotsRef.current, w, h, glowCount)
 
       const leads = dotsRef.current.filter((d) => d.lead)
       const topLeads = new Set(
-        [...leads].sort((a, b) => a.leadRank - b.leadRank).slice(0, Math.max(2, glowCount)),
+        [...leads].sort((a, b) => a.leadRank - b.leadRank).slice(0, glowCount),
       )
 
       const currentTheme = themeRef.current
@@ -289,7 +306,7 @@ export function QuestionDotField({ glowPhase, showPills = true }: QuestionDotFie
         }
       }
 
-      drawFade(ctx, w, h, currentTheme, !showPillsRef.current)
+      drawFade(ctx, w, h, currentTheme, showPillsRef.current && variantRef.current === 'desktop')
       frameRef.current = requestAnimationFrame(draw)
     }
 
@@ -301,14 +318,15 @@ export function QuestionDotField({ glowPhase, showPills = true }: QuestionDotFie
     }
   }, [])
 
-  const litQuestions = Math.round(1 + glowPhase * (QUESTIONS.length - 1))
+  const litQuestions =
+    glowPhase <= 0 ? 0 : Math.min(questions.length, Math.floor(glowPhase * questions.length))
 
   return (
-    <div className="question-field relative h-full w-full">
+    <div className="question-field relative h-full w-full overflow-visible">
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />
       {showPills && (
-      <div className="pointer-events-none absolute inset-0" aria-hidden>
-        {QUESTIONS.map((q, i) => {
+      <div className="pointer-events-none absolute inset-0 overflow-visible" aria-hidden>
+        {questions.map((q, i) => {
           const isLit = i < litQuestions
           return (
             <div
