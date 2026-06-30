@@ -22,9 +22,9 @@ const PALETTE = {
     leadCore: '#f4f3f0',
   },
   light: {
-    base: '#c4bdd4',
-    leadMid: '#8b5cf6',
-    leadCore: '#e8e0f8',
+    base: '#d4d4d8',
+    leadMid: '#6d28d9',
+    leadCore: '#ffffff',
   },
 } as const
 
@@ -135,13 +135,13 @@ function floatPosition(dot: Dot, time: number) {
 }
 
 function drawBackground(ctx: CanvasRenderingContext2D, w: number, h: number, theme: ThemeMode) {
-  ctx.fillStyle = theme === 'light' ? '#f3efe8' : '#08080a'
+  ctx.fillStyle = theme === 'light' ? '#ffffff' : '#08080a'
   ctx.fillRect(0, 0, w, h)
 }
 
 function drawFade(ctx: CanvasRenderingContext2D, w: number, h: number, theme: ThemeMode, edgeFade: boolean) {
   if (edgeFade) {
-    const base = theme === 'light' ? '243, 239, 232' : '8, 8, 10'
+    const base = theme === 'light' ? '255, 255, 255' : '8, 8, 10'
 
     const left = ctx.createLinearGradient(0, 0, w * 0.35, 0)
     left.addColorStop(0, `rgba(${base}, 0.85)`)
@@ -152,7 +152,7 @@ function drawFade(ctx: CanvasRenderingContext2D, w: number, h: number, theme: Th
   }
 
   const bottom = ctx.createRadialGradient(w * 0.5, h * 1.1, 0, w * 0.5, h * 0.7, w * 0.55)
-  bottom.addColorStop(0, theme === 'light' ? 'rgba(212, 164, 58, 0.12)' : 'rgba(232, 184, 74, 0.1)')
+  bottom.addColorStop(0, theme === 'light' ? 'rgba(180, 83, 9, 0.08)' : 'rgba(232, 184, 74, 0.1)')
   bottom.addColorStop(1, 'rgba(0, 0, 0, 0)')
   ctx.fillStyle = bottom
   ctx.fillRect(0, 0, w, h)

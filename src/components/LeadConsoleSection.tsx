@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useInView, useMotionValueEvent, useScroll } from 'framer-motion'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 type Lead = {
   id: string
@@ -146,6 +146,22 @@ function progressFromLeadIndex(index: number, total: number) {
   return Math.min(1, (index + 0.5) / total)
 }
 
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia(query).matches : false,
+  )
+
+  useEffect(() => {
+    const media = window.matchMedia(query)
+    const onChange = () => setMatches(media.matches)
+    onChange()
+    media.addEventListener('change', onChange)
+    return () => media.removeEventListener('change', onChange)
+  }, [query])
+
+  return matches
+}
+
 function maskPhone(phone: string) {
   const digits = phone.replace(/\D/g, '')
   const last4 = digits.slice(-4)
@@ -226,6 +242,9 @@ export function LeadConsoleSection() {
   const [leadIndex, setLeadIndex] = useState(0)
   const isProgrammaticScroll = useRef(false)
   const scrollUnlockTimer = useRef<number | null>(null)
+  const isDesktopConsole = useMediaQuery('(min-width: 768px)')
+  const isDesktopConsoleRef = useRef(isDesktopConsole)
+  isDesktopConsoleRef.current = isDesktopConsole
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -233,7 +252,7 @@ export function LeadConsoleSection() {
   })
 
   useMotionValueEvent(scrollYProgress, 'change', (progress) => {
-    if (isProgrammaticScroll.current) return
+    if (!isDesktopConsoleRef.current || isProgrammaticScroll.current) return
     const nextIndex = leadIndexFromProgress(progress, leads.length)
     setLeadIndex((current) => (current === nextIndex ? current : nextIndex))
   })
@@ -259,20 +278,39 @@ export function LeadConsoleSection() {
     }, 700)
   }, [])
 
+  const goToLead = useCallback(
+    (index: number) => {
+      const boundedIndex = ((index % leads.length) + leads.length) % leads.length
+      if (isDesktopConsoleRef.current) {
+        scrollToLead(boundedIndex)
+        return
+      }
+      setLeadIndex(boundedIndex)
+    },
+    [scrollToLead],
+  )
+
   const nextLead = () => {
-    scrollToLead(leadIndex + 1)
+    goToLead(leadIndex + 1)
   }
 
   const lead = leads[leadIndex]
+  const sectionHeight = `${leads.length * SCROLL_VH_PER_LEAD + SCROLL_HOLD_VH}vh`
 
   return (
     <section
       id="console"
       ref={sectionRef}
       className="lead-console relative border-t border-border"
-      style={{ height: `${leads.length * SCROLL_VH_PER_LEAD + SCROLL_HOLD_VH}vh` }}
+      style={isDesktopConsole ? { height: sectionHeight } : undefined}
     >
-      <div className="sticky top-0 flex min-h-[100svh] flex-col justify-center px-6 py-24 md:px-10 md:py-32">
+      <div
+        className={
+          isDesktopConsole
+            ? 'sticky top-0 flex min-h-[100svh] flex-col justify-center px-6 py-24 md:px-10 md:py-32'
+            : 'px-6 py-24'
+        }
+      >
         <div className="mx-auto w-full max-w-5xl">
         <motion.h2
           initial={{ opacity: 0, y: 16 }}
@@ -404,7 +442,7 @@ export function LeadConsoleSection() {
               key={item.id}
               type="button"
               className={`console-pagination__dot ${index === leadIndex ? 'is-active' : ''}`}
-              onClick={() => scrollToLead(index)}
+              onClick={() => goToLead(index)}
               aria-label={`View lead ${index + 1}: ${item.name}`}
               aria-current={index === leadIndex ? 'true' : undefined}
             />

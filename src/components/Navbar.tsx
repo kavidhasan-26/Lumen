@@ -26,7 +26,7 @@ export function Navbar() {
   }, [])
 
   const shellClass = isLight
-    ? 'border-border bg-surface/75 text-ink shadow-[0_8px_32px_rgba(26,26,26,0.06)] backdrop-blur-xl'
+    ? 'border-border bg-surface/75 text-ink shadow-[0_8px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl'
     : onHero
       ? 'border-white/10 bg-black/35 text-ink shadow-[0_8px_32px_rgba(0,0,0,0.45)] backdrop-blur-xl'
       : 'border-border bg-void/55 text-ink shadow-[0_8px_32px_rgba(0,0,0,0.25)] backdrop-blur-xl'

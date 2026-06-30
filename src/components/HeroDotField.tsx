@@ -17,9 +17,9 @@ const PALETTE = {
     leadCore: '#f4f3f0',
   },
   light: {
-    base: '#c4bdd4',
-    leadMid: '#8b5cf6',
-    leadCore: '#e8e0f8',
+    base: '#d4d4d8',
+    leadMid: '#6d28d9',
+    leadCore: '#ffffff',
   },
 } as const
 
@@ -180,10 +180,9 @@ function drawBackground(
 ) {
   if (theme === 'light') {
     const bg = ctx.createLinearGradient(0, 0, w, h)
-    bg.addColorStop(0, '#faf6f1')
-    bg.addColorStop(0.42, '#eef7f4')
-    bg.addColorStop(0.72, '#ebe6f8')
-    bg.addColorStop(1, '#f5ebe8')
+    bg.addColorStop(0, '#ffffff')
+    bg.addColorStop(0.5, '#fafafa')
+    bg.addColorStop(1, '#f5f5f5')
     ctx.fillStyle = bg
   } else {
     ctx.fillStyle = '#000000'
@@ -206,17 +205,17 @@ function drawFade(
       h * 0.88,
       w * 0.62,
     )
-    textShade.addColorStop(0, 'rgba(250, 246, 241, 0.95)')
-    textShade.addColorStop(0.45, 'rgba(250, 246, 241, 0.45)')
-    textShade.addColorStop(1, 'rgba(250, 246, 241, 0)')
+    textShade.addColorStop(0, 'rgba(255, 255, 255, 0.95)')
+    textShade.addColorStop(0.45, 'rgba(255, 255, 255, 0.45)')
+    textShade.addColorStop(1, 'rgba(255, 255, 255, 0)')
     ctx.fillStyle = textShade
     ctx.fillRect(0, 0, w, h)
 
     const left = ctx.createLinearGradient(0, 0, w * 0.58, 0)
-    left.addColorStop(0, 'rgba(250, 246, 241, 0.98)')
-    left.addColorStop(0.22, 'rgba(250, 246, 241, 0.72)')
-    left.addColorStop(0.42, 'rgba(250, 246, 241, 0.15)')
-    left.addColorStop(0.58, 'rgba(250, 246, 241, 0)')
+    left.addColorStop(0, 'rgba(255, 255, 255, 0.98)')
+    left.addColorStop(0.22, 'rgba(255, 255, 255, 0.72)')
+    left.addColorStop(0.42, 'rgba(255, 255, 255, 0.15)')
+    left.addColorStop(0.58, 'rgba(255, 255, 255, 0)')
     ctx.fillStyle = left
     ctx.fillRect(0, 0, w, h)
 
@@ -229,7 +228,7 @@ function drawFade(
       w * 0.65,
     )
     vignette.addColorStop(0, 'rgba(255, 255, 255, 0)')
-    vignette.addColorStop(1, 'rgba(180, 170, 200, 0.12)')
+    vignette.addColorStop(1, 'rgba(0, 0, 0, 0.04)')
     ctx.fillStyle = vignette
     ctx.fillRect(0, 0, w, h)
     return

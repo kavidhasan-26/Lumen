@@ -9,10 +9,10 @@ const PALETTE = {
     grain: 0.065,
   },
   light: {
-    bg: '#f7f3ee',
-    line: 'rgba(124, 58, 237, 0.62)',
-    glow: 'rgba(109, 40, 217, 0.75)',
-    grain: 0.04,
+    bg: '#ffffff',
+    line: 'rgba(109, 40, 217, 0.55)',
+    glow: 'rgba(109, 40, 217, 0.65)',
+    grain: 0.03,
   },
 } as const
 
@@ -96,8 +96,8 @@ function drawBackground(ctx: CanvasRenderingContext2D, w: number, h: number, the
 
   const vignette = ctx.createRadialGradient(w * 0.5, h * 0.5, 0, w * 0.5, h * 0.5, w * 0.85)
   if (theme === 'light') {
-    vignette.addColorStop(0, 'rgba(247, 243, 238, 0.04)')
-    vignette.addColorStop(1, 'rgba(247, 243, 238, 0.55)')
+    vignette.addColorStop(0, 'rgba(255, 255, 255, 0.04)')
+    vignette.addColorStop(1, 'rgba(0, 0, 0, 0.06)')
   } else {
     vignette.addColorStop(0, 'rgba(8, 8, 10, 0.02)')
     vignette.addColorStop(1, 'rgba(8, 8, 10, 0.55)')
