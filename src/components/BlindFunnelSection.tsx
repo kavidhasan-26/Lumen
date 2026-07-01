@@ -14,7 +14,7 @@ const phases = [
   },
   {
     id: 'solution',
-    eyebrow: '02 — Ranked and ready',
+    eyebrow: '02 — With Lumen AI',
     line1: 'Unsorted inquiries become a clear call list.',
     line2: null,
     body: 'Every inquiry gets scored on intent, budget, and fit. Your team always knows who to call first.',

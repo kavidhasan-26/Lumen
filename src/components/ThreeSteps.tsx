@@ -1,5 +1,5 @@
 import { motion, useInView } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const stepGlow = [
   'shadow-[0_0_40px_rgba(167,139,250,0.12)]',
@@ -294,13 +294,20 @@ function StepPanel({
   step,
   index,
   onActive,
+  registerRef,
 }: {
   step: (typeof steps)[number]
   index: number
   onActive: (index: number) => void
+  registerRef: (index: number, el: HTMLElement | null) => void
 }) {
   const ref = useRef<HTMLElement>(null)
   const inView = useInView(ref, { margin: '-45% 0px -45% 0px' })
+
+  useEffect(() => {
+    registerRef(index, ref.current)
+    return () => registerRef(index, null)
+  }, [index, registerRef])
 
   useEffect(() => {
     if (inView) onActive(index)
@@ -309,7 +316,8 @@ function StepPanel({
   return (
     <article
       ref={ref}
-      className={`step-card glass min-h-[55vh] rounded-2xl p-6 transition-all duration-500 md:min-h-[65vh] md:p-8 ${
+      id={`step-${step.id}`}
+      className={`step-card glass scroll-mt-28 min-h-[55vh] rounded-2xl p-6 transition-all duration-500 md:min-h-[65vh] md:scroll-mt-32 md:p-8 lg:scroll-mt-36 ${
         inView
           ? `step-card--active border-ink/15 ring-1 ring-ink/10 ${stepGlow[index]}`
           : 'step-card--idle'
@@ -332,8 +340,18 @@ function StepPanel({
 
 export function ThreeSteps() {
   const sectionRef = useRef<HTMLElement>(null)
+  const panelRefs = useRef<(HTMLElement | null)[]>([])
   const inView = useInView(sectionRef, { once: true, margin: '-10%' })
   const [active, setActive] = useState(0)
+
+  const registerRef = useCallback((index: number, el: HTMLElement | null) => {
+    panelRefs.current[index] = el
+  }, [])
+
+  const goToStep = useCallback((index: number) => {
+    setActive(index)
+    panelRefs.current[index]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [])
 
   return (
     <section
@@ -359,16 +377,19 @@ export function ThreeSteps() {
             Three things happen before the phone rings.
           </motion.h2>
 
-          <div className="mt-8 hidden flex-col gap-3 md:flex">
+          <div className="mt-8 flex flex-col gap-2 md:gap-3">
             {steps.map((step, i) => (
-              <div
+              <button
                 key={step.id}
-                className={`flex items-center gap-3 transition-opacity duration-300 ${
-                  active === i ? 'opacity-100' : 'opacity-30'
+                type="button"
+                onClick={() => goToStep(i)}
+                aria-current={active === i ? 'step' : undefined}
+                className={`flex items-center gap-3 rounded-lg py-1.5 text-left transition-opacity duration-300 md:py-0 ${
+                  active === i ? 'opacity-100' : 'opacity-30 hover:opacity-50'
                 }`}
               >
                 <span
-                  className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${
+                  className={`h-1.5 w-1.5 shrink-0 rounded-full transition-colors duration-300 ${
                     active === i ? 'bg-ink' : 'bg-border'
                   }`}
                 />
@@ -376,14 +397,20 @@ export function ThreeSteps() {
                   <span className="text-purple mr-2">/ 0{i + 1}</span>
                   {step.title}
                 </span>
-              </div>
+              </button>
             ))}
           </div>
         </div>
 
         <div className="flex flex-col gap-8 md:gap-16 lg:gap-24">
           {steps.map((step, i) => (
-            <StepPanel key={step.id} step={step} index={i} onActive={setActive} />
+            <StepPanel
+              key={step.id}
+              step={step}
+              index={i}
+              onActive={setActive}
+              registerRef={registerRef}
+            />
           ))}
         </div>
       </div>
