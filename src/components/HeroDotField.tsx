@@ -18,7 +18,7 @@ const PALETTE = {
   },
   light: {
     base: '#d4d4d8',
-    leadMid: '#6d28d9',
+    leadMid: '#0a0a0a',
     leadCore: '#ffffff',
   },
 } as const
@@ -302,7 +302,7 @@ function drawLeadDot(
   gradient.addColorStop(0.18, mid)
   gradient.addColorStop(
     0.5,
-    theme === 'light' ? 'rgba(139, 92, 246, 0)' : 'rgba(255, 255, 255, 0)',
+    theme === 'light' ? 'rgba(0, 0, 0, 0)' : 'rgba(255, 255, 255, 0)',
   )
   gradient.addColorStop(1, 'rgba(0, 0, 0, 0)')
 

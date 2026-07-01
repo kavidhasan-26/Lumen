@@ -2,9 +2,9 @@ import { motion, useInView } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 
 const stepGlow = [
-  'shadow-[0_0_40px_rgba(232,184,74,0.12)]',
   'shadow-[0_0_40px_rgba(167,139,250,0.12)]',
-  'shadow-[0_0_40px_rgba(62,232,214,0.1)]',
+  'shadow-[0_0_40px_rgba(167,139,250,0.1)]',
+  'shadow-[0_0_40px_rgba(167,139,250,0.08)]',
 ]
 
 const steps = [
@@ -13,9 +13,9 @@ const steps = [
     title: 'Score',
     body: 'Every lead is read and ranked on real conversion probability the instant it lands. Diamond leads rise to the top — no good lead hides in the queue.',
     outcome: 'Your team always knows who to call first.',
-    accent: 'var(--color-cyan)',
-    shellClass: 'glimpse-shell--cyan',
-    fillClass: 'from-cyan/12',
+    accent: 'var(--color-purple)',
+    shellClass: 'glimpse-shell--purple',
+    fillClass: 'from-purple/12',
   },
   {
     id: 'categorize',
@@ -31,9 +31,9 @@ const steps = [
     title: 'Coach',
     body: "Your agent opens with a tailored, ready-to-use pitch — the right talk-track in the patient's own language, with the affordability angle already worked out.",
     outcome: 'Every call starts with context, not cold discovery.',
-    accent: 'var(--color-gold)',
-    shellClass: 'glimpse-shell--gold',
-    fillClass: 'from-gold/12',
+    accent: 'var(--color-purple)',
+    shellClass: 'glimpse-shell--purple',
+    fillClass: 'from-purple/12',
   },
 ]
 
@@ -51,7 +51,7 @@ function ScoreRing({ score, size = 72 }: { score: number; size?: number }) {
           cy="36"
           r={r}
           fill="none"
-          stroke="var(--color-cyan)"
+          stroke="var(--color-purple)"
           strokeWidth="4"
           strokeLinecap="round"
           strokeDasharray={c}
@@ -70,55 +70,48 @@ function ScoreRing({ score, size = 72 }: { score: number; size?: number }) {
 
 function ScoreGlimpse() {
   const queue = [
+    { tier: 'Diamond', score: 94, featured: true },
     { tier: 'Gold', score: 78 },
     { tier: 'Silver', score: 61 },
   ]
 
   return (
-    <div className="space-y-3">
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="glimpse-card-accent relative overflow-hidden rounded-2xl p-4"
-      >
-        <div className="pointer-events-none absolute -top-8 -right-8 h-24 w-24 rounded-full bg-cyan/15 blur-2xl" />
-        <div className="relative flex items-center gap-4">
-          <ScoreRing score={94} />
+    <div className="glimpse-card divide-border/60 divide-y overflow-hidden rounded-2xl">
+      {queue.map((row, i) => (
+        <motion.div
+          key={row.tier}
+          initial={{ opacity: 0, y: 8 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: i * 0.06 }}
+          className={`flex items-center gap-4 px-4 py-3.5 ${row.featured ? 'bg-surface-raised/40' : ''}`}
+        >
+          {row.featured ? (
+            <ScoreRing score={row.score} size={56} />
+          ) : (
+            <span className="text-ink/75 font-display w-12 shrink-0 text-right text-sm tabular-nums">
+              {row.score}
+            </span>
+          )}
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="bg-cyan/15 text-cyan rounded-full px-2.5 py-0.5 text-[10px] font-medium tracking-[0.12em] uppercase">
-                Diamond
-              </span>
-              <span className="text-gold flex items-center gap-1.5 text-[10px] font-medium">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="bg-gold absolute inline-flex h-full w-full animate-ping rounded-full opacity-70" />
-                  <span className="bg-gold relative inline-flex h-1.5 w-1.5 rounded-full" />
-                </span>
-                Losing interest
-              </span>
-            </div>
-            <p className="font-display text-ink mt-2 text-sm">Top of today&apos;s queue</p>
-            <p className="text-muted mt-1 text-[11px]">Ranked first · call now</p>
+            <p
+              className={`text-[10px] font-medium tracking-[0.1em] uppercase ${
+                row.featured ? 'text-purple' : 'text-muted'
+              }`}
+            >
+              {row.tier}
+            </p>
+            {row.featured && (
+              <>
+                <p className="font-display text-ink mt-1 text-sm">Top of today&apos;s queue</p>
+                <p className="text-muted mt-0.5 text-[11px]">
+                  Losing interest · ranked first · call now
+                </p>
+              </>
+            )}
           </div>
-        </div>
-      </motion.div>
-
-      <div className="space-y-2 pl-3">
-        {queue.map((row, i) => (
-          <motion.div
-            key={row.tier}
-            initial={{ opacity: 0, x: -8 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.15 + i * 0.08 }}
-            className="glimpse-card-muted flex items-center justify-between rounded-xl px-3 py-2.5"
-          >
-            <span className="text-muted text-[10px] tracking-[0.1em] uppercase">{row.tier}</span>
-            <span className="text-ink/70 font-display text-sm">{row.score}</span>
-          </motion.div>
-        ))}
-      </div>
+        </motion.div>
+      ))}
     </div>
   )
 }
@@ -128,17 +121,14 @@ function CategorizeGlimpse() {
     {
       label: 'Interest',
       items: ['Hair transplant', 'High intent'],
-      accent: 'bg-gold',
     },
     {
       label: 'Fit',
       items: ['High affordability', 'EMI eligible'],
-      accent: 'bg-purple',
     },
     {
       label: 'Context',
       items: ['WhatsApp lead', '2d ago'],
-      accent: 'bg-cyan',
     },
   ]
 
@@ -160,7 +150,7 @@ function CategorizeGlimpse() {
             className="flex items-center gap-4 px-4 py-3.5"
           >
             <div className="flex w-[5.5rem] shrink-0 items-center gap-2">
-              <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${group.accent}`} />
+              <span className="bg-ink/35 h-1.5 w-1.5 shrink-0 rounded-full" />
               <span className="text-muted text-[10px] leading-none tracking-[0.08em] uppercase">
                 {group.label}
               </span>
@@ -188,7 +178,7 @@ function CoachGlimpse() {
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="glimpse-card-accent glimpse-card-accent--gold rounded-2xl p-4"
+        className="glimpse-card-accent glimpse-card-accent--purple rounded-2xl p-4"
       >
         <p className="text-muted text-[10px] font-medium tracking-[0.14em] uppercase">
           Call briefing
@@ -216,7 +206,7 @@ function CoachGlimpse() {
         transition={{ delay: 0.15 }}
         className="glimpse-card relative rounded-2xl p-4"
       >
-        <div className="bg-gold/70 absolute top-4 bottom-4 left-0 w-0.5 rounded-full" />
+        <div className="bg-purple/70 absolute top-4 bottom-4 left-0 w-0.5 rounded-full" />
         <p className="text-muted pl-3 text-[10px] font-medium tracking-[0.14em] uppercase">
           Open with
         </p>
@@ -241,7 +231,7 @@ function CoachGlimpse() {
         </div>
         <div className="glimpse-timeline-track relative h-1.5 overflow-hidden rounded-full">
           <motion.div
-            className="bg-gold absolute top-0 left-[58%] h-full w-[18%] rounded-full"
+            className="bg-purple absolute top-0 left-[58%] h-full w-[18%] rounded-full"
             initial={{ opacity: 0, scaleX: 0 }}
             whileInView={{ opacity: 1, scaleX: 1 }}
             viewport={{ once: true }}
@@ -252,7 +242,7 @@ function CoachGlimpse() {
         <div className="text-muted mt-2 flex justify-between text-[10px]">
           <span>Mon</span>
           <span>Fri</span>
-          <span className="text-gold">Sat</span>
+          <span className="text-purple">Sat</span>
           <span>Sun</span>
         </div>
       </motion.div>
@@ -325,7 +315,7 @@ function StepPanel({
           : 'step-card--idle'
       }`}
     >
-      <span className="text-gold text-xs tracking-wide">/ 0{index + 1}</span>
+      <span className="text-purple text-xs tracking-wide">/ 0{index + 1}</span>
       <h3 className="font-display text-ink mt-3 text-2xl md:text-3xl">{step.title}</h3>
       <p className="text-muted mt-4 text-sm leading-relaxed md:text-base">{step.body}</p>
       <p className="text-ink/75 mt-4 text-sm font-medium">{step.outcome}</p>
@@ -378,13 +368,12 @@ export function ThreeSteps() {
                 }`}
               >
                 <span
-                  className="h-1.5 w-1.5 rounded-full transition-colors duration-300"
-                  style={{
-                    background: active === i ? step.accent : 'var(--color-border)',
-                  }}
+                  className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${
+                    active === i ? 'bg-ink' : 'bg-border'
+                  }`}
                 />
                 <span className="text-muted text-sm">
-                  <span className="text-gold mr-2">/ 0{i + 1}</span>
+                  <span className="text-purple mr-2">/ 0{i + 1}</span>
                   {step.title}
                 </span>
               </div>

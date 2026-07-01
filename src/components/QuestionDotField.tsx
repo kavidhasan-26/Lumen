@@ -23,7 +23,7 @@ const PALETTE = {
   },
   light: {
     base: '#d4d4d8',
-    leadMid: '#6d28d9',
+    leadMid: '#0a0a0a',
     leadCore: '#ffffff',
   },
 } as const

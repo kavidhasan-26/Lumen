@@ -5,7 +5,7 @@ const phases = [
   {
     title: 'Lumen Copilot',
     status: 'Live now',
-    tone: 'cyan' as const,
+    tone: 'green' as const,
     body: 'Scoring, profiles & pitch for your human agents. Every enquiry read on arrival, every call started with the full picture.',
     dimmed: false,
   },
@@ -26,7 +26,7 @@ const phases = [
 ]
 
 const badgeStyles = {
-  cyan: 'roadmap-badge roadmap-badge--cyan',
+  green: 'roadmap-badge roadmap-badge--green',
   purple: 'roadmap-badge roadmap-badge--purple',
   muted: 'roadmap-badge roadmap-badge--muted',
 }
