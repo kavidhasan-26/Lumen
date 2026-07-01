@@ -212,49 +212,56 @@ function drawLeadDot(
   ctx.globalAlpha = 1
 }
 
-const DESKTOP_QUESTIONS = [
-  { id: 'who', text: 'Who is this?', x: '58%', y: '18%', delay: 0 },
-  { id: 'afford', text: 'Can they afford it?', x: '42%', y: '36%', delay: 0.4 },
-  { id: 'intent', text: 'Will they book?', x: '68%', y: '44%', delay: 0.8 },
-  { id: 'when', text: 'When to call?', x: '50%', y: '62%', delay: 1.2 },
-  { id: 'fit', text: 'Right procedure?', x: '72%', y: '70%', delay: 1.6 },
-]
+const TIER_LABELS = ['Diamond', 'Gold', 'Silver', 'Bronze', 'Unverified'] as const
 
-const MOBILE_QUESTIONS = [
-  { id: 'who', text: 'Who is this?', x: '74%', y: '12%', delay: 0 },
-  { id: 'afford', text: 'Can they afford it?', x: '34%', y: '26%', delay: 0.4 },
-  { id: 'intent', text: 'Will they book?', x: '70%', y: '42%', delay: 0.8 },
-  { id: 'when', text: 'When to call?', x: '30%', y: '58%', delay: 1.2 },
-  { id: 'fit', text: 'Right procedure?', x: '72%', y: '74%', delay: 1.6 },
-]
+const LABEL_COLOR: Record<ThemeMode, [number, number, number]> = {
+  dark: [255, 255, 255],
+  light: [10, 10, 10],
+}
+
+function drawTierLabel(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius: number,
+  rank: number,
+  theme: ThemeMode,
+  alpha: number,
+) {
+  if (rank < 0 || rank >= TIER_LABELS.length) return
+
+  const [r, g, b] = LABEL_COLOR[theme]
+  const label = TIER_LABELS[rank].toUpperCase()
+
+  ctx.font = '500 11px sans-serif'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'top'
+  ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${Math.min(1, alpha * 0.92)})`
+  ctx.fillText(label, x, y + radius + 12)
+  ctx.textAlign = 'left'
+}
 
 interface QuestionDotFieldProps {
   /** 0 = problem (dim), 1 = ranked (glowing) */
   glowPhase: number
-  showPills?: boolean
   variant?: 'desktop' | 'mobile'
 }
 
 export function QuestionDotField({
   glowPhase,
-  showPills = true,
   variant = 'desktop',
 }: QuestionDotFieldProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const frameRef = useRef(0)
   const dotsRef = useRef<Dot[]>([])
   const glowRef = useRef(glowPhase)
-  const showPillsRef = useRef(showPills)
   const variantRef = useRef(variant)
   const timeRef = useRef(0)
   const { theme } = useTheme()
   const themeRef = useRef(theme)
   themeRef.current = theme
   glowRef.current = glowPhase
-  showPillsRef.current = showPills
   variantRef.current = variant
-
-  const questions = variant === 'mobile' ? MOBILE_QUESTIONS : DESKTOP_QUESTIONS
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -309,7 +316,14 @@ export function QuestionDotField({
         }
       }
 
-      drawFade(ctx, w, h, currentTheme, showPillsRef.current && variantRef.current === 'desktop')
+      for (const dot of dotsRef.current) {
+        if (dot.lead && topLeads.has(dot)) {
+          const { x, y, scale, alpha } = floatPosition(dot, time)
+          drawTierLabel(ctx, x, y, dot.radius * scale, dot.leadRank, currentTheme, alpha)
+        }
+      }
+
+      drawFade(ctx, w, h, currentTheme, variantRef.current === 'desktop')
       frameRef.current = requestAnimationFrame(draw)
     }
 
@@ -321,33 +335,13 @@ export function QuestionDotField({
     }
   }, [])
 
-  const litQuestions =
-    glowPhase <= 0 ? 0 : Math.min(questions.length, Math.floor(glowPhase * questions.length))
-
   return (
     <div className="question-field relative h-full w-full overflow-visible">
-      <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />
-      {showPills && (
-      <div className="pointer-events-none absolute inset-0 overflow-visible" aria-hidden>
-        {questions.map((q, i) => {
-          const isLit = i < litQuestions
-          return (
-            <div
-              key={q.id}
-              className={`question-pill absolute ${isLit ? 'question-pill--lit' : ''}`}
-              style={{
-                left: q.x,
-                top: q.y,
-                animationDelay: `${q.delay}s`,
-              }}
-            >
-              <span className="question-pill__dot" />
-              <span className="question-pill__text">{q.text}</span>
-            </div>
-          )
-        })}
-      </div>
-      )}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 h-full w-full"
+        aria-label="Animation showing inquiries ranked as Diamond, Gold, Silver, Bronze, or Unverified"
+      />
     </div>
   )
 }
