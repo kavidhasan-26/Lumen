@@ -10,8 +10,8 @@ const PALETTE = {
   },
   light: {
     bg: '#ffffff',
-    line: 'rgba(109, 40, 217, 0.55)',
-    glow: 'rgba(109, 40, 217, 0.65)',
+    line: 'rgba(145, 109, 249, 0.55)',
+    glow: 'rgba(145, 109, 249, 0.65)',
     grain: 0.03,
   },
 } as const

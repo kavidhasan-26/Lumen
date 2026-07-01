@@ -18,8 +18,8 @@ const PALETTE = {
   },
   light: {
     base: '#d4d4d8',
-    leadMid: '#0a0a0a',
-    leadCore: '#ffffff',
+    leadMid: '#916DF9',
+    leadCore: '#f0ebff',
   },
 } as const
 
@@ -300,9 +300,12 @@ function drawLeadDot(
   const gradient = ctx.createRadialGradient(x, y, 0, x, y, glowR)
   gradient.addColorStop(0, core)
   gradient.addColorStop(0.18, mid)
+  if (theme === 'light') {
+    gradient.addColorStop(0.5, 'rgba(145, 109, 249, 0.2)')
+  }
   gradient.addColorStop(
-    0.5,
-    theme === 'light' ? 'rgba(0, 0, 0, 0)' : 'rgba(255, 255, 255, 0)',
+    0.65,
+    theme === 'light' ? 'rgba(145, 109, 249, 0)' : 'rgba(255, 255, 255, 0)',
   )
   gradient.addColorStop(1, 'rgba(0, 0, 0, 0)')
 
